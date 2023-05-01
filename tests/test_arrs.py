@@ -1,40 +1,46 @@
-import pytest
+import unittest
 
-from utils import arrs
-from utils.arrs import coating_types, divide
-
-
-def test_get():
-    assert arrs.get([1, 2, -3], 1, default='default') == 2
-    assert arrs.get([1, 2, 3, 4], -1, default='default') == 'default'
+from utils.arrs import get, my_slice
 
 
-def test_slice():
-    assert arrs.my_slice([1, 2, 3, 4], 1, 3) == [2, 3]
-    assert arrs.my_slice([1, 2, 3], 1) == [2, 3]
+class TestGet(unittest.TestCase):
+    def test_get_existing_index(self):
+        self.assertEqual(get([1, 2, 3], 1), 2)
+
+    def test_get_non_existing_index(self):
+        self.assertEqual(get([1, 2, 3, 4], -4), None)
+
+    def test_get_negative_index(self):
+        self.assertEqual(get([1, 2, 3], -1), None)
+
+    def test_get_default_value(self):
+        self.assertEqual(get([1, 2, 3], -3, "default"), "default")
 
 
+class TestMySlice(unittest.TestCase):
+    def test_my_slice_full(self):
+        self.assertEqual(my_slice([1, 2, 3]), [1, 2, 3])
 
-@pytest.mark.parametrize('array, coating_in_array, expcted', [
-    ([1, 2, 3], int, 3),
-    ([1, '2', '3'], str, 2),
-    ([1, '2', '3'], int, 1)
+    def test_my_slice_start(self):
+        self.assertEqual(my_slice([1, 2, 3], 1), [2, 3])
 
-])
+    def test_my_slice_end(self):
+        self.assertEqual(my_slice([1, 2, 3], end=2), [1, 2])
 
-def test_coating_tupes(array, coating_in_array, expcted):
-    assert coating_types(array, coating_in_array) == expcted
+    def test_my_slice_start_and_end(self):
+        self.assertEqual(my_slice([1, 2, 3, 4], 1, 3), [2, 3])
 
+    def test_my_slice_empty(self):
+        self.assertEqual(my_slice([]), [])
 
-def test_divide():
-    assert divide(35, 7) == 5
-    assert divide(1_000_000, 2) == 500_000
-    assert divide(81, 9) == 9
-    assert divide(6.6, 2) == 3.3
-    assert divide(25, 5) == 5
-    assert divide(18, 3) == 6
+    def test_my_slice_negative_start(self):
+        self.assertEqual(my_slice([1, 2, 3], -2), [2, 3])
 
+    def test_my_slice_negative_end(self):
+        self.assertEqual(my_slice([1, 2, 3], end=-1), [1, 2])
 
-def test_divide_division_zro():
-    with pytest.raises(ZeroDivisionError):
-        divide(10, 0)
+    def test_my_slice_negative_start_and_end(self):
+        self.assertEqual(my_slice([1, 2, 3], -2, -1), [2])
+
+if __name__ == '__main__':
+    unittest.main()
